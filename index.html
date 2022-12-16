@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <script src="geometry.js"></script>
+    <script src="hardcodedGraphics.js"></script>
+    <script src="memory.js"></script>
+    <script src="script.js"></script>
+
+    <title>Emoji Collision</title>
+    <link rel="icon" type="image/x-icon" href="/images/emoji.webp">
+  </head>
+  <body>
+    <!-- width="1280" height="800" -->
+    <canvas id="canvas" width="800" height="600">lmao ur bowser cant display canvas lol u poor</canvas>
+    <script>
+      //constants
+      const pi = Math.PI;
+
+      //options
+      const options = {
+        logControls: false,
+        showMousePosition: false,
+      }
+
+      //frame control
+      const FRAMES_PER_SECOND = 60; // default: 60
+      const FRAME_MIN_TIME = (1000/60) * (60/FRAMES_PER_SECOND) - (1000/60) * 0.5;
+      let lastFrameTime = 0; 
+
+      //initialize canvas
+      const canvas = document.getElementById("canvas");
+      const ctx = canvas.getContext("2d");
+      ctx.imageSmoothingEnabled = false;
+
+      //loads application
+      loadBubbles();
+
+      //game loop
+      function update(time){
+        if(time - lastFrameTime<FRAME_MIN_TIME){
+          requestAnimationFrame(update);
+          return;
+        }
+        
+        lastFrameTime = time;
+
+        //logic
+        canvas.style = "cursor: auto"; //reset to default at the start of every frame
+
+        for(let i = 0; i<memory.instances.length; i++){
+          for(let j=0; j<memory.instances[i].actions.length; j++){
+           memory.instances[i].actions[j]();
+          } 
+        }
+
+        //render
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.beginPath();
+
+        if(options.showMousePosition == true){
+          drawCoord(controls.mousePosition);
+        }
+
+        for(let i=0; i<memory.instances[0].entities.length; i++){
+            for(let j=0; j<memory.instances[0].entities[i].graphics.length; j++){
+              parseGraphic(memory.instances[0].entities[i].origin, memory.instances[0].entities[i].graphics[j], "n/a");
+            }
+        }
+        requestAnimationFrame(update);
+      }
+      requestAnimationFrame(update);
+    </script>
+  </body>
+</html>
